@@ -21,18 +21,18 @@ parse_file() {
             awk '{print "{\"url\": \"" $0 "\"},"}' "$1"
             ;;
         *)
-            echo "Unbekannter Dateityp: $1"
+            echo "Unknown file type: $1"
             exit 1
             ;;
     esac
 }
 
 # Main logic
-read -p "Gib den Pfad zur Datei ein: " filepath
-read -p "Gib den Namen der Hoarder-Liste ein: " list_name
+read -p "Enter the path to the file: " filepath
+read -p "Enter the name of the Hoarder list: " list_name
 
 if [ ! -f "$filepath" ]; then
-    echo "Datei nicht gefunden!"
+    echo "File not found!"
     exit 1
 fi
 
@@ -51,14 +51,14 @@ done < <(parse_file "$filepath")
 output="${output%,}]"
 
 # Preview of the data
-echo -e "\n--- Vorschau der Daten ---"
+echo -e "\n--- Preview of the Data ---"
 echo "$output" | jq '.' | head -n 20
 
-read -p "Möchtest du die Daten exportieren? (ja/nein): " confirm
+read -p "Would you like to export the data? (yes/no): " confirm
 if [[ "$confirm" =~ ^[Jj]a$ ]]; then
-    read -p "Gib den Namen der Ausgabedatei ein (z.B. output.json): " output_file
+    read -p "Enter the name of the output file (e.g. output.json): " output_file
     echo "$output" > "$output_file"
-    echo "Daten erfolgreich in $output_file gespeichert."
+    echo "Data successfully saved in $output_file."
 else
-    echo "Export abgebrochen."
+    echo "Export canceled."
 fi
