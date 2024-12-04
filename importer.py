@@ -7,7 +7,7 @@ import mimetypes
 import requests
 
 def validate_url(url):
-    """Prüft, ob eine URL gültig ist und erreichbar."""
+    """Checks whether a URL is valid and accessible."""
     try:
         response = requests.head(url, timeout=5)
         return response.status_code < 400
@@ -15,7 +15,7 @@ def validate_url(url):
         return False
 
 def parse_file(filepath):
-    """Erkennt Dateityp und extrahiert Inhalte."""
+    """Recognizes file type and extracts content."""
     _, ext = os.path.splitext(filepath)
     ext = ext.lower()
     if ext == '.csv':
@@ -27,34 +27,34 @@ def parse_file(filepath):
     elif ext == '.txt':
         return parse_txt(filepath)
     else:
-        raise ValueError(f"Unbekannter Dateityp: {ext}")
+        raise ValueError(f"Unknown file type: {ext}")
 
 def parse_csv(filepath):
-    """Parst eine CSV-Datei."""
+    """Parses a CSV file."""
     with open(filepath, mode='r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         return [row for row in reader]
 
 def parse_json(filepath):
-    """Parst eine JSON-Datei."""
+    """Parses a JSON file."""
     with open(filepath, mode='r', encoding='utf-8') as f:
         return json.load(f)
 
 def parse_html(filepath):
-    """Parst eine HTML-Datei und extrahiert Links."""
+    """Parses an HTML file and extracts links."""
     with open(filepath, mode='r', encoding='utf-8') as f:
         content = f.read()
     links = re.findall(r'href="([^"]+)"', content)
     return [{'url': link} for link in links]
 
 def parse_txt(filepath):
-    """Parst eine TXT-Datei und extrahiert URLs."""
+    """Parses a TXT file and extracts URLs."""
     with open(filepath, mode='r', encoding='utf-8') as f:
         lines = f.readlines()
     return [{'url': line.strip()} for line in lines if line.strip()]
 
 def format_for_hoarder(data, list_name):
-    """Formatiert Daten für Hoarder."""
+    """Formats data for Hoarder."""
     formatted = []
     for entry in data:
         if 'url' in entry and validate_url(entry['url']):
@@ -68,8 +68,8 @@ def format_for_hoarder(data, list_name):
     return formatted
 
 def preview_data(data):
-    """Zeigt eine Vorschau der Daten."""
-    print("\n--- Vorschau der Daten ---")
+    """Shows a preview of the data."""
+    print("\n--- Preview of the data ---")
     for i, entry in enumerate(data[:10], start=1):
         print(f"{i}. URL: {entry['url']}")
         print(f"   Titel: {entry.get('title', 'N/A')}")
@@ -77,30 +77,30 @@ def preview_data(data):
         print(f"   Tags: {', '.join(entry.get('tags', []))}")
         print(f"   Liste: {entry.get('list', 'N/A')}")
     if len(data) > 10:
-        print(f"... und {len(data) - 10} weitere Einträge.")
+        print(f"... und {len(data) - 10} more Entries.")
 
 def save_to_json(data, output_file):
-    """Speichert die Daten in eine JSON-Datei."""
+    """Saves the data in a JSON file."""
     with open(output_file, mode='w', encoding='utf-8') as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
-    print(f"\nDaten erfolgreich in {output_file} gespeichert.")
+    print(f"\nData successfully in {output_file} saved.")
 
 def main():
-    filepath = input("Gib den Pfad zur Datei ein: ").strip()
-    list_name = input("Gib den Namen der Hoarder-Liste ein: ").strip()
+    filepath = input("Enter the path to the file: ").strip()
+    list_name = input("Enter the name of the Hoarder list: ").strip()
     
     try:
         data = parse_file(filepath)
         formatted_data = format_for_hoarder(data, list_name)
         preview_data(formatted_data)
         
-        if input("\nMöchtest du die Daten exportieren? (ja/nein): ").strip().lower() == 'ja':
-            output_file = input("Gib den Namen der Ausgabedatei ein (z.B. output.json): ").strip()
+        if input("\nWould you like to export the data? (yes/no): ").strip().lower() == 'ja':
+            output_file = input("Enter the name of the output file (e.g. output.json): ").strip()
             save_to_json(formatted_data, output_file)
         else:
-            print("Export abgebrochen.")
+            print("Export canceled.")
     except Exception as e:
-        print(f"Fehler: {e}")
+        print(f"Error: {e}")
 
 if __name__ == "__main__":
     main()
