@@ -28,3 +28,7 @@ How the Bash script works:
 Prerequisites:
 
 - Tools such as curl, jq, and awk must be installed.
+
+##License
+
+This project is licensed under the GNU General Public License v3.0. See the [LICENSE]([https://choosealicense.com/licenses/gpl-3.0/])) file for details.
