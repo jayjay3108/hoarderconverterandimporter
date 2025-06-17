@@ -20,9 +20,6 @@ parse_file() {
         *.txt)
             awk '{print "{\"url\": \"" $0 "\"},"}' "$1"
             ;;
-        *.md)
-            grep -oP '\[([^\]]+)\]\(([^)]+)\)' "$1" | sed 's/\[\(.*\)\](\(.*\))/{"url": "\2", "title": "\1"},/'
-            ;;
         *)
             echo "Unknown file type: $1"
             exit 1

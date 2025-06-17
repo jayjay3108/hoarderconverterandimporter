@@ -1,5 +1,33 @@
 #!/bin/bash
 
+# ...existing code...
+
+parse_file() {
+    case "$1" in
+        *.csv)
+            awk -F',' 'NR > 1 {print "{\"url\": \"" $1 "\", \"title\": \"" $2 "\", \"description\": \"" $3 "\"},"}' "$1"
+            ;;
+        *.json)
+            jq -c '.[] | {url: .url, title: .title, description: .description}' "$1"
+            ;;
+        *.html)
+            grep -oP '(?<=href=")[^"]*' "$1" | awk '{print "{\"url\": \"" $1 "\"},"}'
+            ;;
+        *.txt)
+            awk '{print "{\"url\": \"" $0 "\"},"}' "$1"
+            ;;
+        *.md)
+            grep -oP '\[([^\]]+)\]\(([^)]+)\)' "$1" | sed 's/\[\(.*\)\](\(.*\))/{"url": "\2", "title": "\1"},/'
+            ;;
+        *)
+            echo "Unknown file type: $1"
+            exit 1
+            ;;
+    esac
+}
+
+# ...rest of existing code...#!/bin/bash
+
 # Function for validating URLs
 validate_url() {
     curl -Is --max-time 5 "$1" | head -n 1 | grep -q "200 OK"
@@ -19,9 +47,6 @@ parse_file() {
             ;;
         *.txt)
             awk '{print "{\"url\": \"" $0 "\"},"}' "$1"
-            ;;
-        *.md)
-            grep -oP '\[([^\]]+)\]\(([^)]+)\)' "$1" | sed 's/\[\(.*\)\](\(.*\))/{"url": "\2", "title": "\1"},/'
             ;;
         *)
             echo "Unknown file type: $1"
