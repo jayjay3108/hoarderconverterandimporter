@@ -17,14 +17,13 @@ parse_file() {
             jq -c '.[] | {url: .url, title: .title, description: .description}' "$1"
             ;;
         *.html)
-            grep -oP '(?<=href=")[^"]*' "$1" | awk '{print "{\"url\": \"" $1 "\", \"title\": \"\", \"description\": \"\"},"}'
+            grep -oP '(?<=href=")[^"]*' "$1" | awk '{print "{\"url\": \"" $1 "\"},"}'
             ;;
         *.txt)
-            awk '{print "{\"url\": \"" $0 "\", \"title\": \"\", \"description\": \"\"},"}' "$1"
+            awk '{print "{\"url\": \"" $0 "\"},"}' "$1"
             ;;
         *.md)
-            # Always output url, title, and description as strings (description empty)
-            grep -oP '\[([^\]]+)\]\(([^)]+)\)' "$1" | sed 's/\[\(.*\)\](\(.*\))/{"url": "\2", "title": "\1", "description": ""},/'
+            grep -oP '\[([^\]]+)\]\(([^)]+)\)' "$1" | sed 's/\[\(.*\)\](\(.*\))/{"url": "\2", "title": "\1"},/'
             ;;
         *)
             echo "Unknown file type: $1"
